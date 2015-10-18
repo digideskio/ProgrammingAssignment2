@@ -29,22 +29,30 @@ makeCacheMatrix <- function(x = matrix()) {
 ## It returns a matrix that is the inverse of 'x'
 
 cacheSolve <- function(x, ...) {
-    ## First it checks whether the cache already exists in the environment
-    if (!exists("cache")) {
-        ## Here makeCacheMatrix function is memoized
-        cache <<- makeCacheMatrix(x)
+
+    validateCache <- function(x) {
+        ## First it checks whether the cache already exists in the environment
+        if (!exists("cache")) {
+            ## Here makeCacheMatrix function is memoized
+            cache <<- makeCacheMatrix(x)
+        }
+
+        ## Then it checks whether the data input is the same as the one in the cache
+        data <- cache$get()
+        if (identical(x, data)) {
+            message("Same data input")
+
+            xinv <- cache$getSolve()
+            if (!is.null(xinv)) {
+                message("Returning cached solve")
+                return(xinv)
+            }
+        }
     }
 
-    ## Then it checks whether the data input is the same as the one in the cache
-    data <- cache$get()
-    if (identical(x, data)) {
-        message("Same data input")
-
-        xinv <- cache$getSolve()
-        if (!is.null(xinv)) {
-            message("Returning cached solve")
-            return(xinv)
-        }
+    xinv <- validateCache(x)
+    if (!is.null(xinv)) {
+        return(xinv)
     }
 
     ## Otherwise set the data input and inverse result in the cache
