@@ -59,7 +59,7 @@ cacheSolve <- function(x, ...) {
     cache$set(x)
     data <- cache$get()
 
-    xinv <- solve(data)
+    xinv <- solve(data, ...)
     cache$setSolve(xinv)
     xinv
 }
